@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Raymart Alejado | Aspiring Software Engineer</title>
-
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <script src="https://cdn.tailwindcss.com"></script>
@@ -12,10 +11,9 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <script src="https://unpkg.com/typed.js@2.1.0/dist/typed.umd.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/tsparticles@2.12.0/tsparticles.bundle.min.js"></script>
-
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
       --accent:  #00d4ff;
       --accent2: #7c3aed;
@@ -34,7 +32,6 @@
       --spring: cubic-bezier(0.34,1.56,0.64,1);
       --smooth: cubic-bezier(0.4,0,0.2,1);
     }
-
     html { scroll-behavior: smooth; }
     body {
       font-family: var(--font-body);
@@ -43,7 +40,6 @@
     }
     body.dark  { background: var(--bg-dark);  color: var(--text-dark); }
     body.light { background: var(--bg-light); color: var(--text-light); }
-
     ::-webkit-scrollbar { width: 4px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: linear-gradient(var(--accent), var(--accent2)); border-radius: 99px; }
@@ -97,8 +93,107 @@
       30%{transform:translate(-1%,4%)} 40%{transform:translate(4%,-1%)} 50%{transform:translate(-3%,1%)}
       60%{transform:translate(1%,-4%)} 70%{transform:translate(-4%,3%)} 80%{transform:translate(2%,-2%)} 90%{transform:translate(-2%,4%)}
     }
-
     #tsparticles { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+
+    /* ── TOAST NOTIFICATION ── */
+    #toast {
+      position: fixed;
+      top: 1.5rem;
+      right: 1.5rem;
+      z-index: 10000;
+      max-width: 340px;
+      width: calc(100vw - 3rem);
+      padding: 1rem 1.25rem;
+      border-radius: 14px;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.85rem;
+      backdrop-filter: blur(20px);
+      border: 1px solid;
+      transform: translateY(-20px) translateX(20px);
+      opacity: 0;
+      pointer-events: none;
+      transition: transform 0.45s var(--spring), opacity 0.35s ease;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.35);
+    }
+    #toast.show {
+      transform: translateY(0) translateX(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+    #toast.success {
+      background: rgba(16, 30, 20, 0.95);
+      border-color: rgba(74,222,128,0.35);
+    }
+    #toast.error {
+      background: rgba(30, 10, 16, 0.95);
+      border-color: rgba(244,63,94,0.35);
+    }
+    body.light #toast.success { background: rgba(240,255,245,0.97); }
+    body.light #toast.error   { background: rgba(255,240,243,0.97); }
+    .toast-icon {
+      font-size: 1.25rem;
+      flex-shrink: 0;
+      margin-top: 0.05rem;
+    }
+    #toast.success .toast-icon { color: #4ade80; }
+    #toast.error   .toast-icon { color: #f43f5e; }
+    .toast-content { flex: 1; min-width: 0; }
+    .toast-title {
+      font-family: var(--font-display);
+      font-size: 0.82rem;
+      font-weight: 700;
+      margin-bottom: 0.22rem;
+    }
+    #toast.success .toast-title { color: #4ade80; }
+    #toast.error   .toast-title { color: #f43f5e; }
+    .toast-msg {
+      font-size: 0.78rem;
+      line-height: 1.5;
+    }
+    body.dark  .toast-msg { color: rgba(232,234,246,0.65); }
+    body.light .toast-msg { color: rgba(15,15,45,0.65); }
+    .toast-close {
+      background: none; border: none; cursor: pointer;
+      font-size: 0.75rem; opacity: 0.5;
+      padding: 0.15rem; transition: opacity 0.2s;
+      flex-shrink: 0; margin-top: 0.1rem;
+    }
+    body.dark  .toast-close { color: var(--text-dark); }
+    body.light .toast-close { color: var(--text-light); }
+    .toast-close:hover { opacity: 1; }
+    .toast-progress {
+      position: absolute;
+      bottom: 0; left: 0;
+      height: 3px;
+      border-radius: 0 0 14px 14px;
+      animation: toastTimer 5s linear forwards;
+    }
+    #toast.success .toast-progress { background: linear-gradient(90deg, #4ade80, #22c55e); }
+    #toast.error   .toast-progress { background: linear-gradient(90deg, #f43f5e, #e11d48); }
+    @keyframes toastTimer {
+      from { width: 100%; }
+      to   { width: 0%; }
+    }
+
+    /* ── reCAPTCHA wrapper ── */
+    .recaptcha-wrap {
+      margin-bottom: 0.85rem;
+    }
+    .recaptcha-wrap .g-recaptcha {
+      transform-origin: left top;
+    }
+    @media (max-width: 360px) {
+      .recaptcha-wrap .g-recaptcha {
+        transform: scale(0.85);
+      }
+    }
+    .recaptcha-note {
+      font-size: 0.68rem;
+      opacity: 0.4;
+      margin-top: 0.4rem;
+      line-height: 1.5;
+    }
 
     /* ── Avatar ── */
     .avatar-wrap {
@@ -236,16 +331,13 @@
     }
     body.dark  #navbar.scrolled { background: rgba(6,6,17,0.9); }
     body.light #navbar.scrolled { background: rgba(240,244,255,0.92); border-color: var(--border-light); }
-
     .nav-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
-
     .logo {
       font-family: var(--font-display); font-weight: 700; font-size: 1.2rem;
       background: linear-gradient(135deg, var(--accent), var(--accent2));
       -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
       letter-spacing: -0.02em; text-decoration: none; flex-shrink: 0;
     }
-
     .nav-links { display: flex; gap: 1.75rem; align-items: center; }
     .nav-link {
       font-family: var(--font-display); font-size: 0.8rem; font-weight: 600;
@@ -262,7 +354,6 @@
       transition: width 0.3s ease; border-radius: 99px;
     }
     .nav-link:hover::after, .nav-link.active::after { width: 100%; }
-
     .nav-actions { display: flex; align-items: center; gap: 0.65rem; flex-shrink: 0; }
     .theme-btn {
       width: 38px; height: 38px; border-radius: 50%; border: 1px solid;
@@ -272,7 +363,6 @@
     body.dark  .theme-btn { color: var(--text-dark); border-color: var(--border-dark); }
     body.light .theme-btn { color: var(--text-light); border-color: var(--border-light); }
     .theme-btn:hover { background: rgba(0,212,255,0.1); border-color: var(--accent); color: var(--accent); transform: rotate(20deg); }
-
     .menu-btn {
       display: none; flex-direction: column; gap: 5px;
       cursor: pointer; padding: 6px; background: none; border: none;
@@ -285,7 +375,6 @@
     .menu-btn.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
     .menu-btn.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
     .menu-btn.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
-
     #mobile-menu {
       display: none; flex-direction: column;
       padding: 0.75rem 1.25rem 1.25rem; gap: 0.1rem;
@@ -308,7 +397,6 @@
     body.dark  .mobile-link { color: var(--text-dark); }
     body.light .mobile-link { color: var(--text-light); }
     .mobile-link:hover, .mobile-link:active { opacity: 1; color: var(--accent); padding-left: 0.65rem; }
-
     @media (max-width: 768px) {
       .nav-links { display: none; }
       .menu-btn { display: flex; }
@@ -335,7 +423,6 @@
       text-align: center; padding: 6rem 1.25rem 5rem;
       position: relative; z-index: 2;
     }
-
     .hero-eyebrow {
       font-family: var(--font-display); font-size: 0.7rem; font-weight: 600;
       letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent);
@@ -346,7 +433,6 @@
     .hero-eyebrow span::before, .hero-eyebrow span::after {
       content: ''; display: inline-block; width: 20px; height: 1px; background: var(--accent);
     }
-
     .hero-title-wrap {
       margin-bottom: 1.25rem;
       opacity: 0; animation: fadeUp 0.9s 0.6s forwards;
@@ -369,9 +455,7 @@
       background: linear-gradient(135deg, #0f0f2d 20%, var(--accent2) 50%, var(--accent) 80%);
       -webkit-background-clip: text; background-clip: text; background-size: 200% 200%;
     }
-
     .typed-cursor { color: var(--accent); font-weight: 100; }
-
     .hero-sub {
       font-size: clamp(0.82rem, 2.5vw, 1.1rem); font-weight: 300; letter-spacing: 0.04em;
       opacity: 0; animation: fadeUp 0.9s 0.8s forwards; margin-bottom: 2rem;
@@ -379,7 +463,6 @@
     }
     body.dark  .hero-sub { color: rgba(232,234,246,0.55); }
     body.light .hero-sub { color: rgba(15,15,45,0.55); }
-
     .hero-badges {
       display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center;
       margin-bottom: 2rem; opacity: 0; animation: fadeUp 0.9s 1s forwards;
@@ -397,13 +480,11 @@
       background: rgba(0,212,255,0.06); transform: translateY(-2px);
     }
     body.light .badge:hover { border-color: var(--accent2); color: var(--accent2); background: rgba(124,58,237,0.06); }
-
     .hero-btns {
       display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center;
       opacity: 0; animation: fadeUp 0.9s 1.15s forwards;
       width: 100%; padding: 0 1rem;
     }
-
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(28px); }
       to   { opacity: 1; transform: translateY(0); }
@@ -427,7 +508,6 @@
     .btn-primary:hover::before { opacity: 1; }
     .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 8px 32px rgba(0,212,255,0.4); }
     .btn-primary:active { transform: translateY(-1px); }
-
     .btn-outline {
       padding: 0.8rem 1.7rem; border-radius: 10px;
       font-family: var(--font-display); font-size: 0.82rem; font-weight: 700;
@@ -464,7 +544,6 @@
 
     /* ── Section Base ── */
     .section { max-width: 1200px; margin: 0 auto; padding: 5rem 1.25rem; position: relative; z-index: 2; }
-
     .section-tag {
       font-family: var(--font-display); font-size: 0.66rem; font-weight: 700;
       letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent);
@@ -474,7 +553,6 @@
       content: ''; width: 18px; height: 1.5px;
       background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 99px;
     }
-
     .section-title {
       font-family: var(--font-display);
       font-size: clamp(1.65rem, 5vw, 3rem);
@@ -554,7 +632,6 @@
     .carousel-slide { flex: 0 0 100%; padding: 0.4rem; box-sizing: border-box; }
     @media (min-width: 640px)  { .carousel-slide { flex: 0 0 50%; } }
     @media (min-width: 1024px) { .carousel-slide { flex: 0 0 33.333%; } }
-
     .carousel-btn {
       position: absolute; top: 50%; transform: translateY(-50%);
       z-index: 10; width: 40px; height: 40px; border-radius: 50%; border: 1px solid;
@@ -567,11 +644,10 @@
     .carousel-btn:hover { background: var(--accent); border-color: var(--accent); color: #fff; transform: translateY(-50%) scale(1.08); }
     .carousel-btn.prev { left: -20px; }
     .carousel-btn.next { right: -20px; }
-    @media (max-width: 640px) { 
-      .carousel-btn.prev { left: 6px; } 
+    @media (max-width: 640px) {
+      .carousel-btn.prev { left: 6px; }
       .carousel-btn.next { right: 6px; }
     }
-
     .carousel-dots { display: flex; justify-content: center; gap: 0.45rem; margin-top: 1.5rem; flex-wrap: wrap; }
     .dot { width: 6px; height: 6px; border-radius: 99px; cursor: pointer; transition: all 0.35s var(--spring); flex-shrink: 0; }
     body.dark  .dot { background: rgba(255,255,255,0.2); }
@@ -632,8 +708,6 @@
     .btn-card.secondary:hover { background: #e2e8f0; color: #0f0f2d; border-color: #e2e8f0; transform: translateY(-2px); }
     .btn-card.apk { background: transparent; color: #4ade80; border: 1px solid rgba(74,222,128,0.3); }
     .btn-card.apk:hover { background: #4ade80; color: #0f2d1a; border-color: #4ade80; transform: translateY(-2px); }
-    .btn-card.doc { background: transparent; color: #fb923c; border: 1px solid rgba(251,146,60,0.3); }
-    .btn-card.doc:hover { background: #fb923c; color: #fff; border-color: #fb923c; transform: translateY(-2px); }
 
     /* ── Social Links ── */
     .social-links { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 1.5rem; }
@@ -700,7 +774,6 @@
     body.light .hosting-card i { color: var(--accent2); }
     .hosting-card span { font-family: var(--font-display); font-size: 0.8rem; font-weight: 600; }
     .hosting-card small { font-size: 0.68rem; opacity: 0.45; letter-spacing: 0.03em; }
-
     .tools-sub-label {
       font-family: var(--font-display); font-size: 0.66rem; font-weight: 700;
       letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent2);
@@ -729,10 +802,6 @@
     .form-field input:focus, .form-field textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,212,255,0.1); }
     body.light .form-field input:focus, body.light .form-field textarea:focus { border-color: var(--accent2); box-shadow: 0 0 0 3px rgba(124,58,237,0.1); }
     .form-field input::placeholder, .form-field textarea::placeholder { opacity: 0.4; }
-    #form-feedback { font-size: 0.83rem; margin-top: 0.7rem; display: none; padding: 0.55rem 0.85rem; border-radius: 8px; }
-    #form-feedback.success { color: #4ade80; background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.2); display: block; }
-    #form-feedback.error   { color: #f43f5e; background: rgba(244,63,94,0.08); border: 1px solid rgba(244,63,94,0.2); display: block; }
-
     .quick-link {
       display: flex; align-items: center; gap: 0.7rem;
       padding: 0.8rem 0; font-size: 0.88rem; font-weight: 400;
@@ -808,6 +877,99 @@
       background: rgba(0,212,255,0.1); color: var(--accent); letter-spacing: 0.02em;
     }
 
+    /* ── Image Modal (shared base) ── */
+    .img-modal-base {
+      position: fixed; inset: 0; z-index: 600;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(0,0,0,0.88); backdrop-filter: blur(16px);
+      opacity: 0; visibility: hidden; transition: opacity 0.35s, visibility 0.35s;
+      padding: 1rem;
+    }
+    .img-modal-inner {
+      max-width: 680px; width: 100%; border-radius: 20px;
+      display: flex; flex-direction: column; max-height: 90vh;
+      transform: scale(0.93) translateY(16px);
+      transition: transform 0.4s var(--spring);
+    }
+    body.dark  .img-modal-inner { background: rgba(10,10,22,0.98); border: 1px solid rgba(0,212,255,0.18); }
+    body.light .img-modal-inner { background: rgba(248,250,255,0.98); border: 1px solid var(--border-light); box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+    .img-modal-base.open { opacity: 1; visibility: visible; }
+    .img-modal-base.open .img-modal-inner { transform: scale(1) translateY(0); }
+    .img-modal-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 1.4rem; border-bottom: 1px solid; flex-shrink: 0;
+    }
+    body.dark  .img-modal-header { border-color: rgba(0,212,255,0.12); }
+    body.light .img-modal-header { border-color: var(--border-light); }
+    .img-modal-header h3 { font-family: var(--font-display); font-size: 0.9rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; }
+    .img-modal-header h3 i { color: var(--accent); }
+    .img-close-btn {
+      width: 34px; height: 34px; border-radius: 50%; border: 1px solid;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      font-size: 0.9rem; transition: all 0.25s; flex-shrink: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+    body.dark  .img-close-btn { background: rgba(255,255,255,0.06); border-color: rgba(0,212,255,0.2); color: var(--text-dark); }
+    body.light .img-close-btn { background: rgba(0,0,0,0.05); border-color: var(--border-light); color: var(--text-light); }
+    .img-close-btn:hover { background: rgba(244,63,94,0.18); color: var(--accent3); border-color: rgba(244,63,94,0.4); transform: rotate(90deg) scale(1.1); }
+    .img-modal-body {
+      overflow-y: auto; padding: 1.5rem;
+      display: flex; gap: 1.1rem; justify-content: center; align-items: flex-start; flex-wrap: wrap;
+    }
+    .phone-mockup {
+      display: flex; flex-direction: column; align-items: center; gap: 0.65rem;
+      flex: 1; min-width: 180px; max-width: 260px;
+    }
+    .phone-frame {
+      width: 100%; border-radius: 28px;
+      padding: 11px 9px;
+      position: relative;
+    }
+    body.dark  .phone-frame { background: linear-gradient(145deg,#1c1c2e,#0d0d1a); border: 2px solid rgba(0,212,255,0.25); box-shadow: 0 0 0 1px rgba(255,255,255,0.05), 0 20px 50px rgba(0,0,0,0.5); }
+    body.light .phone-frame { background: linear-gradient(145deg,#e8eaf6,#d0d4f0); border: 2px solid rgba(124,58,237,0.25); box-shadow: 0 20px 50px rgba(0,0,0,0.12); }
+    .desktop-mockup {
+      display: flex; flex-direction: column; align-items: center; gap: 0.65rem;
+      flex: 1; min-width: 240px; max-width: 100%;
+    }
+    .desktop-frame {
+      width: 100%; border-radius: 10px 10px 8px 8px;
+      overflow: hidden; position: relative;
+    }
+    body.dark  .desktop-frame { border: 2px solid rgba(0,212,255,0.25); box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+    body.light .desktop-frame { border: 2px solid rgba(124,58,237,0.25); box-shadow: 0 20px 50px rgba(0,0,0,0.12); }
+    .desktop-titlebar {
+      display: flex; align-items: center; gap: 0.45rem;
+      padding: 0.5rem 0.85rem;
+    }
+    body.dark  .desktop-titlebar { background: rgba(255,255,255,0.07); }
+    body.light .desktop-titlebar { background: rgba(0,0,0,0.06); }
+    .titlebar-dot { width: 9px; height: 9px; border-radius: 50%; }
+    .titlebar-dot.red    { background: #f43f5e; }
+    .titlebar-dot.yellow { background: #fbbf24; }
+    .titlebar-dot.green  { background: #4ade80; }
+    .desktop-screen { overflow: hidden; }
+    .desktop-screen img { width: 100%; height: auto; display: block; transition: transform 0.4s ease; }
+    .desktop-screen img:hover { transform: scale(1.03); }
+    .desktop-label { font-family: var(--font-display); font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.55; }
+    body.dark  .desktop-label { color: var(--accent); }
+    body.light .desktop-label { color: var(--accent2); }
+    .phone-notch { width: 55px; height: 7px; border-radius: 99px; margin: 0 auto 9px; }
+    body.dark  .phone-notch { background: rgba(0,212,255,0.15); }
+    body.light .phone-notch { background: rgba(124,58,237,0.2); }
+    .phone-screen { border-radius: 18px; overflow: hidden; border: 1px solid rgba(255,255,255,0.06); }
+    .phone-screen img { width: 100%; height: auto; display: block; transition: transform 0.4s ease; }
+    .phone-screen img:hover { transform: scale(1.03); }
+    .phone-home { width: 46px; height: 3.5px; border-radius: 99px; margin: 9px auto 0; }
+    body.dark  .phone-home { background: rgba(255,255,255,0.12); }
+    body.light .phone-home { background: rgba(0,0,0,0.1); }
+    .phone-label { font-family: var(--font-display); font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.55; }
+    body.dark  .phone-label { color: var(--accent); }
+    body.light .phone-label { color: var(--accent2); }
+    .img-modal-footer { padding: 0.8rem 1.4rem; border-top: 1px solid; text-align: center; flex-shrink: 0; }
+    body.dark  .img-modal-footer { border-color: rgba(0,212,255,0.08); }
+    body.light .img-modal-footer { border-color: var(--border-light); }
+    .img-modal-footer p { font-family: var(--font-display); font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase; opacity: 0.3; }
+
     /* ── Chatbot ── */
     #chatbot-toggle {
       position: fixed; bottom: 1.25rem; right: 1.25rem;
@@ -828,7 +990,6 @@
       0%       { transform: scale(1); opacity: 0.6; }
       70%,100% { transform: scale(1.4); opacity: 0; }
     }
-
     #chat-panel {
       position: fixed; bottom: 5rem; right: 1.25rem;
       width: 340px; max-width: calc(100vw - 1.5rem);
@@ -841,7 +1002,6 @@
     #chat-panel.open { transform: scale(1) translateY(0); opacity: 1; visibility: visible; }
     body.dark  #chat-panel { background: rgba(10,10,22,0.97); backdrop-filter: blur(20px); border-color: var(--border-dark); }
     body.light #chat-panel { background: rgba(248,250,255,0.98); backdrop-filter: blur(20px); border-color: var(--border-light); box-shadow: 0 16px 48px rgba(124,58,237,0.12); }
-
     .chat-header { padding: 0.9rem 1.1rem; border-bottom: 1px solid; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
     body.dark  .chat-header { border-color: var(--border-dark); }
     body.light .chat-header { border-color: var(--border-light); }
@@ -861,7 +1021,6 @@
     body.dark  .chat-close { background: rgba(255,255,255,0.07); color: var(--text-dark); }
     body.light .chat-close { background: rgba(0,0,0,0.06); color: var(--text-light); }
     .chat-close:hover { background: rgba(244,63,94,0.15); color: var(--accent3); transform: rotate(90deg); }
-
     .chat-messages { flex: 1; overflow-y: auto; padding: 0.9rem; display: flex; flex-direction: column; gap: 0.6rem; }
     .chat-messages::-webkit-scrollbar { width: 2px; }
     .msg {
@@ -903,73 +1062,6 @@
       -webkit-tap-highlight-color: transparent;
     }
     #chat-send:hover { transform: scale(1.1); box-shadow: 0 0 16px rgba(0,212,255,0.4); }
-
-    /* ── Image Modal ── */
-    #img-modal {
-      position: fixed; inset: 0; z-index: 600;
-      display: flex; align-items: center; justify-content: center;
-      background: rgba(0,0,0,0.88); backdrop-filter: blur(16px);
-      opacity: 0; visibility: hidden; transition: opacity 0.35s, visibility 0.35s;
-      padding: 1rem;
-    }
-    .img-modal-inner {
-      max-width: 680px; width: 100%; border-radius: 20px;
-      display: flex; flex-direction: column; max-height: 90vh;
-      transform: scale(0.93) translateY(16px);
-      transition: transform 0.4s var(--spring);
-    }
-    body.dark  .img-modal-inner { background: rgba(10,10,22,0.98); border: 1px solid rgba(0,212,255,0.18); }
-    body.light .img-modal-inner { background: rgba(248,250,255,0.98); border: 1px solid var(--border-light); box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
-    #img-modal.open { opacity: 1; visibility: visible; }
-    #img-modal.open .img-modal-inner { transform: scale(1) translateY(0); }
-    .img-modal-header {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 1rem 1.4rem; border-bottom: 1px solid; flex-shrink: 0;
-    }
-    body.dark  .img-modal-header { border-color: rgba(0,212,255,0.12); }
-    body.light .img-modal-header { border-color: var(--border-light); }
-    .img-modal-header h3 { font-family: var(--font-display); font-size: 0.9rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; }
-    .img-modal-header h3 i { color: var(--accent); }
-    .img-close-btn {
-      width: 34px; height: 34px; border-radius: 50%; border: 1px solid;
-      cursor: pointer; display: flex; align-items: center; justify-content: center;
-      font-size: 0.9rem; transition: all 0.25s; flex-shrink: 0;
-      -webkit-tap-highlight-color: transparent;
-    }
-    body.dark  .img-close-btn { background: rgba(255,255,255,0.06); border-color: rgba(0,212,255,0.2); color: var(--text-dark); }
-    body.light .img-close-btn { background: rgba(0,0,0,0.05); border-color: var(--border-light); color: var(--text-light); }
-    .img-close-btn:hover { background: rgba(244,63,94,0.18); color: var(--accent3); border-color: rgba(244,63,94,0.4); transform: rotate(90deg) scale(1.1); }
-    .img-modal-body {
-      overflow-y: auto; padding: 1.5rem;
-      display: flex; gap: 1.1rem; justify-content: center; align-items: flex-start; flex-wrap: wrap;
-    }
-    .phone-mockup {
-      display: flex; flex-direction: column; align-items: center; gap: 0.65rem;
-      flex: 1; min-width: 200px; max-width: 260px;
-    }
-    .phone-frame {
-      width: 100%; border-radius: 28px;
-      padding: 11px 9px;
-      position: relative;
-    }
-    body.dark  .phone-frame { background: linear-gradient(145deg,#1c1c2e,#0d0d1a); border: 2px solid rgba(0,212,255,0.25); box-shadow: 0 0 0 1px rgba(255,255,255,0.05), 0 20px 50px rgba(0,0,0,0.5); }
-    body.light .phone-frame { background: linear-gradient(145deg,#e8eaf6,#d0d4f0); border: 2px solid rgba(124,58,237,0.25); box-shadow: 0 20px 50px rgba(0,0,0,0.12); }
-    .phone-notch { width: 55px; height: 7px; border-radius: 99px; margin: 0 auto 9px; }
-    body.dark  .phone-notch { background: rgba(0,212,255,0.15); }
-    body.light .phone-notch { background: rgba(124,58,237,0.2); }
-    .phone-screen { border-radius: 18px; overflow: hidden; border: 1px solid rgba(255,255,255,0.06); }
-    .phone-screen img { width: 100%; height: auto; display: block; transition: transform 0.4s ease; }
-    .phone-screen img:hover { transform: scale(1.03); }
-    .phone-home { width: 46px; height: 3.5px; border-radius: 99px; margin: 9px auto 0; }
-    body.dark  .phone-home { background: rgba(255,255,255,0.12); }
-    body.light .phone-home { background: rgba(0,0,0,0.1); }
-    .phone-label { font-family: var(--font-display); font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.55; }
-    body.dark  .phone-label { color: var(--accent); }
-    body.light .phone-label { color: var(--accent2); }
-    .img-modal-footer { padding: 0.8rem 1.4rem; border-top: 1px solid; text-align: center; flex-shrink: 0; }
-    body.dark  .img-modal-footer { border-color: rgba(0,212,255,0.08); }
-    body.light .img-modal-footer { border-color: var(--border-light); }
-    .img-modal-footer p { font-family: var(--font-display); font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase; opacity: 0.3; }
 
     /* ── Footer ── */
     footer { position: relative; z-index: 2; border-top: 1px solid; }
@@ -1035,16 +1127,6 @@
     }
     .visit-dot { width: 6px; height: 6px; border-radius: 50%; background: #4ade80; animation: blinkStatus 2.5s ease infinite; flex-shrink: 0; }
 
-    /* ── Print ── */
-    @media print {
-      #chatbot-toggle, #chat-panel, #navbar, .cursor-dot, .cursor-ring,
-      #tsparticles, .bg-orbs, .noise, #loading-screen, #progress-bar,
-      .hero-btns, .scroll-indicator, .section-divider, #scroll-top-btn { display: none !important; }
-      body { background: white !important; color: black !important; }
-      .card { background: white !important; border: 1px solid #e5e7eb !important; box-shadow: none !important; }
-      .section-title, .hero-title, .logo { color: black !important; -webkit-text-fill-color: black !important; background: none !important; }
-    }
-
     /* ── Loading Button ── */
     .btn-loading { opacity: 0.7; pointer-events: none; }
     .btn-loading::after {
@@ -1052,6 +1134,17 @@
       border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff;
       border-radius: 50%; animation: spin 0.6s linear infinite;
       margin-left: 0.45rem; vertical-align: middle;
+    }
+
+    /* ── Print ── */
+    @media print {
+      #chatbot-toggle, #chat-panel, #navbar, .cursor-dot, .cursor-ring,
+      #tsparticles, .bg-orbs, .noise, #loading-screen, #progress-bar,
+      .hero-btns, .scroll-indicator, .section-divider, #scroll-top-btn,
+      #toast { display: none !important; }
+      body { background: white !important; color: black !important; }
+      .card { background: white !important; border: 1px solid #e5e7eb !important; box-shadow: none !important; }
+      .section-title, .hero-title, .logo { color: black !important; -webkit-text-fill-color: black !important; background: none !important; }
     }
 
     /* ── Mobile Overrides ── */
@@ -1087,16 +1180,17 @@
       .footer-grid { gap: 1.25rem; }
       .cv-modal-header { flex-direction: column; align-items: flex-start; gap: 0.75rem; }
       .cv-modal-actions { width: 100%; justify-content: space-between; }
-      .phone-mockup { min-width: 160px; max-width: 220px; }
+      .phone-mockup { min-width: 140px; max-width: 200px; }
+      .desktop-mockup { min-width: 100%; }
+      #toast { top: 0.75rem; right: 0.75rem; left: 0.75rem; width: auto; max-width: none; }
+      .recaptcha-wrap .g-recaptcha { transform: scale(0.82); transform-origin: left top; }
     }
-
     @media (max-width: 380px) {
       .hero-title { font-size: 1.75rem; }
       .about-grid { gap: 0.9rem; }
       .stack-grid { grid-template-columns: 1fr; }
       .hosting-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
     }
-
     @media (max-width: 768px) {
       #navbar { padding: 0.9rem 1.1rem; }
       #navbar.scrolled { padding: 0.6rem 1.1rem; }
@@ -1110,9 +1204,7 @@
   </style>
 </head>
 <body class="dark">
-
   <div id="progress-bar"></div>
-
   <div class="bg-orbs">
     <div class="orb orb-1"></div>
     <div class="orb orb-2"></div>
@@ -1120,14 +1212,25 @@
   </div>
   <div class="noise"></div>
   <div id="tsparticles"></div>
-
   <div id="loading-screen">
     <div class="loader-ring"></div>
     <p class="loader-text">Loading portfolio…</p>
   </div>
-
   <div class="cursor-dot" id="cursor-dot"></div>
   <div class="cursor-ring" id="cursor-ring"></div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast" role="alert" aria-live="polite">
+    <i class="toast-icon fas fa-check-circle"></i>
+    <div class="toast-content">
+      <div class="toast-title" id="toast-title">Message Sent!</div>
+      <div class="toast-msg" id="toast-msg">I'll get back to you soon.</div>
+    </div>
+    <button class="toast-close" id="toast-close-btn" aria-label="Close notification">
+      <i class="fas fa-times"></i>
+    </button>
+    <div class="toast-progress" id="toast-progress"></div>
+  </div>
 
   <!-- Scroll To Top -->
   <button id="scroll-top-btn" title="Back to top" aria-label="Back to top">
@@ -1174,15 +1277,11 @@
       <div class="avatar-placeholder" style="display:none">RA</div>
       <div class="avatar-status"></div>
     </div>
-
     <p class="hero-eyebrow"><span>Aspiring Software Engineer</span></p>
-
     <div class="hero-title-wrap">
       <h1 class="hero-title"><span id="typed-name"></span></h1>
     </div>
-
     <p class="hero-sub">4th Year BSIT Student · Datamex College of Saint Adeline</p>
-
     <div class="hero-badges">
       <span class="badge">VB.NET</span>
       <span class="badge">JavaScript</span>
@@ -1191,13 +1290,11 @@
       <span class="badge">MySQL</span>
       <span class="badge">Tailwind CSS</span>
     </div>
-
     <div class="hero-btns">
       <button class="btn-primary" id="view-cv-btn">
         <i class="fas fa-id-card"></i> View CV
       </button>
     </div>
-
     <div class="scroll-indicator" id="scroll-indicator"
          onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'})">
       <div class="scroll-mouse"><div class="scroll-wheel"></div></div>
@@ -1264,11 +1361,9 @@
   <div class="section" id="projects">
     <p class="section-tag reveal">Portfolio</p>
     <h2 class="section-title reveal reveal-delay-1">Featured <span class="highlight">Projects</span></h2>
-
     <div class="carousel-wrap reveal reveal-delay-2">
       <div class="carousel-track-outer">
         <div class="carousel-track" id="carousel-track">
-
           <!-- Project 1: POS System -->
           <div class="carousel-slide">
             <div class="card project-card">
@@ -1291,7 +1386,6 @@
               </div>
             </div>
           </div>
-
           <!-- Project 2: Website Game -->
           <div class="carousel-slide">
             <div class="card project-card">
@@ -1313,7 +1407,6 @@
               </div>
             </div>
           </div>
-
           <!-- Project 3: APK POS -->
           <div class="carousel-slide">
             <div class="card project-card">
@@ -1330,12 +1423,11 @@
                 </div>
                 <div class="project-actions">
                   <a href="apk/pos-app.apk" download class="btn-card apk"><i class="fas fa-download"></i> APK</a>
-                  <button onclick="openImgModal()" class="btn-card primary"><i class="fas fa-images"></i> Images</button>
+                  <button onclick="openImgModal('apk')" class="btn-card primary"><i class="fas fa-images"></i> Images</button>
                 </div>
               </div>
             </div>
           </div>
-
           <!-- Project 4: Frontend School -->
           <div class="carousel-slide">
             <div class="card project-card">
@@ -1357,7 +1449,6 @@
               </div>
             </div>
           </div>
-
           <!-- Project 5: E-commerce -->
           <div class="carousel-slide">
             <div class="card project-card">
@@ -1379,7 +1470,6 @@
               </div>
             </div>
           </div>
-
           <!-- Project 6: Student Info System -->
           <div class="carousel-slide">
             <div class="card project-card">
@@ -1395,13 +1485,11 @@
                   <span class="project-tag">SQL Server</span>
                 </div>
                 <div class="project-actions">
-                  <a href="docs/student-info-system.pdf" target="_blank" class="btn-card doc"><i class="fas fa-file-alt"></i> Docs</a>
-                  <a href="#" class="btn-card secondary"><i class="fab fa-github"></i> GitHub</a>
+                  <button onclick="openImgModal('sis')" class="btn-card primary"><i class="fas fa-images"></i> View</button>
                 </div>
               </div>
             </div>
           </div>
-
         </div>
       </div>
       <button class="carousel-btn prev" id="carousel-prev" aria-label="Previous"><i class="fas fa-chevron-left"></i></button>
@@ -1416,7 +1504,6 @@
   <div class="section" id="tools">
     <p class="section-tag reveal">Workflow</p>
     <h2 class="section-title reveal reveal-delay-1">Tools &amp; <span class="highlight">Environment</span></h2>
-
     <div class="tools-marquee-outer reveal reveal-delay-2">
       <div class="tools-marquee-track" id="tools-track">
         <div class="tool-chip"><i class="fab fa-vscode"></i> VS Code</div>
@@ -1428,7 +1515,6 @@
         <div class="tool-chip"><i class="fas fa-rocket"></i> Antigravity</div>
         <div class="tool-chip"><i class="fab fa-git-alt"></i> Git</div>
         <div class="tool-chip"><i class="fas fa-database"></i> SSMS</div>
-        <!-- Duplicate for seamless loop -->
         <div class="tool-chip"><i class="fab fa-vscode"></i> VS Code</div>
         <div class="tool-chip"><i class="fas fa-code"></i> Notepad++</div>
         <div class="tool-chip"><i class="fab fa-android"></i> Android Studio</div>
@@ -1440,7 +1526,6 @@
         <div class="tool-chip"><i class="fas fa-database"></i> SSMS</div>
       </div>
     </div>
-
     <p class="tools-sub-label reveal reveal-delay-3">Hosting Platforms</p>
     <div class="hosting-grid reveal reveal-delay-4">
       <div class="hosting-card">
@@ -1475,6 +1560,7 @@
     <div class="contact-grid">
       <div class="card contact-form reveal from-left reveal-delay-2">
         <h3>Send a Message</h3>
+        <!-- ✅ FORMSPREE: https://formspree.io/f/xgorgrzy -->
         <form id="contact-form" novalidate>
           <div class="form-field">
             <input type="text" name="name" placeholder="Your name" required autocomplete="name">
@@ -1485,12 +1571,16 @@
           <div class="form-field">
             <textarea rows="4" name="message" placeholder="Your message…" required></textarea>
           </div>
-          <!-- Honeypot -->
+          <!-- Honeypot anti-spam field (hidden) -->
           <input type="text" name="_gotcha" style="display:none" tabindex="-1" autocomplete="off">
+          <!-- ✅ reCAPTCHA v2 — site key: 6Lcgf34sAAAAADJDO85vn3Y9gEJQ1rwtLvyONBFX -->
+          <div class="recaptcha-wrap">
+            <div class="g-recaptcha" data-sitekey="6Lcgf34sAAAAADJDO85vn3Y9gEJQ1rwtLvyONBFX"></div>
+            <p class="recaptcha-note">Protected by Google reCAPTCHA</p>
+          </div>
           <button type="submit" class="btn-primary" id="form-submit-btn" style="width:100%;justify-content:center">
             <i class="fas fa-paper-plane"></i> Send Message
           </button>
-          <p id="form-feedback"></p>
         </form>
       </div>
 
@@ -1500,19 +1590,20 @@
         <a href="#techstack" class="quick-link"><i class="fas fa-layer-group" style="width:16px;opacity:0.5;flex-shrink:0"></i> Tech Stack  <i class="fas fa-arrow-right arrow"></i></a>
         <a href="#projects"  class="quick-link"><i class="fas fa-rocket"      style="width:16px;opacity:0.5;flex-shrink:0"></i> Projects    <i class="fas fa-arrow-right arrow"></i></a>
         <button class="quick-link" id="view-cv-btn2"><i class="fas fa-id-card" style="width:16px;opacity:0.5;flex-shrink:0"></i> View CV <i class="fas fa-arrow-right arrow"></i></button>
-
         <div style="margin-top:1.5rem">
           <p style="font-size:0.7rem;opacity:0.4;letter-spacing:0.12em;text-transform:uppercase;font-family:var(--font-display);margin-bottom:0.85rem">Find me online</p>
           <div class="social-links">
-            <a href="https://github.com/martxlcvv"                                   target="_blank" rel="noopener" class="social-btn github">  <i class="fab fa-github"></i>   GitHub   </a>
-            <a href="https://www.linkedin.com/in/alejado-raymart-a0aab1401/"          target="_blank" rel="noopener" class="social-btn linkedin"><i class="fab fa-linkedin"></i> LinkedIn </a>
-            <a href="https://www.facebook.com/profile.php?id=61582284070928"          target="_blank" rel="noopener" class="social-btn facebook"><i class="fab fa-facebook"></i> Facebook </a>
-            <a href="mailto:alejadoraymart10202005@gmail.com"                          class="social-btn email">       <i class="fas fa-envelope"></i> Email    </a>
+            <a href="https://github.com/martxlcvv"                                  target="_blank" rel="noopener" class="social-btn github">  <i class="fab fa-github"></i>   GitHub   </a>
+            <a href="https://www.linkedin.com/in/alejado-raymart-a0aab1401/"         target="_blank" rel="noopener" class="social-btn linkedin"><i class="fab fa-linkedin"></i> LinkedIn </a>
+            <a href="https://www.facebook.com/profile.php?id=61582284070928"         target="_blank" rel="noopener" class="social-btn facebook"><i class="fab fa-facebook"></i> Facebook </a>
+            <a href="mailto:alejadoraymart10202005@gmail.com"                         class="social-btn email">       <i class="fas fa-envelope"></i> Email    </a>
           </div>
         </div>
-
         <div style="margin-top:1.5rem;padding-top:1.1rem;border-top:1px solid rgba(0,212,255,0.1)">
-          <p style="font-size:0.85rem;opacity:0.55;margin-bottom:0.35rem;word-break:break-all"><i class="fas fa-envelope" style="margin-right:0.5rem;color:var(--accent)"></i>alejadoraymart10202005@gmail.com</p>
+          <p style="font-size:0.85rem;opacity:0.55;margin-bottom:0.35rem;word-break:break-all">
+            <i class="fas fa-envelope" style="margin-right:0.5rem;color:var(--accent)"></i>
+            <a href="mailto:alejadoraymart10202005@gmail.com" style="text-decoration:none;color:inherit">alejadoraymart10202005@gmail.com</a>
+          </p>
           <p style="font-size:0.85rem;opacity:0.55"><i class="fas fa-phone" style="margin-right:0.5rem;color:var(--accent2)"></i>+63 912 345 6789</p>
         </div>
       </div>
@@ -1527,13 +1618,12 @@
           <div class="logo">Raymart.dev</div>
           <p>4th Year BSIT Student at Datamex College of Saint Adeline. Building things that matter — one line of code at a time.</p>
           <div class="footer-social">
-            <a href="https://github.com/martxlcvv"                                   target="_blank" rel="noopener" title="GitHub">  <i class="fab fa-github"></i>  </a>
-            <a href="https://www.linkedin.com/in/alejado-raymart-a0aab1401/"          target="_blank" rel="noopener" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
-            <a href="https://www.facebook.com/profile.php?id=61582284070928"          target="_blank" rel="noopener" title="Facebook"><i class="fab fa-facebook"></i></a>
-            <a href="mailto:alejadoraymart10202005@gmail.com"                          title="Email"><i class="fas fa-envelope"></i></a>
+            <a href="https://github.com/martxlcvv"                                  target="_blank" rel="noopener" title="GitHub">  <i class="fab fa-github"></i>  </a>
+            <a href="https://www.linkedin.com/in/alejado-raymart-a0aab1401/"         target="_blank" rel="noopener" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+            <a href="https://www.facebook.com/profile.php?id=61582284070928"         target="_blank" rel="noopener" title="Facebook"><i class="fab fa-facebook"></i></a>
+            <a href="mailto:alejadoraymart10202005@gmail.com"                         title="Email"><i class="fas fa-envelope"></i></a>
           </div>
         </div>
-
         <div class="footer-col">
           <h4>Navigation</h4>
           <ul>
@@ -1544,7 +1634,6 @@
             <li><a href="#contact">  <i class="fas fa-chevron-right" style="font-size:0.58rem;opacity:0.4"></i> Contact</a></li>
           </ul>
         </div>
-
         <div class="footer-col">
           <h4>Resources</h4>
           <ul>
@@ -1552,12 +1641,10 @@
           </ul>
         </div>
       </div>
-
       <div class="footer-bottom">
         <p>© 2026 Raymart Alejado · Designed &amp; Built by Raymart</p>
       </div>
     </div>
-
     <div class="visit-counter-bar">
       <div class="visit-counter-inner">
         <span class="visit-dot"></span>
@@ -1599,12 +1686,12 @@
     </div>
   </div>
 
-  <!-- ── Image Modal for APK POS ── -->
-  <div id="img-modal" role="dialog" aria-modal="true" aria-label="APK POS Screenshots">
+  <!-- APK POS — Image Modal -->
+  <div id="img-modal-apk" class="img-modal-base" role="dialog" aria-modal="true" aria-label="APK POS Screenshots">
     <div class="img-modal-inner">
       <div class="img-modal-header">
         <h3><i class="fas fa-mobile-alt"></i> APK POS — App Screenshots</h3>
-        <button class="img-close-btn" id="close-img-modal" aria-label="Close">
+        <button class="img-close-btn" onclick="closeImgModal('apk')" aria-label="Close">
           <i class="fas fa-times"></i>
         </button>
       </div>
@@ -1636,9 +1723,53 @@
     </div>
   </div>
 
+  <!-- Student Info System — Image Modal -->
+  <div id="img-modal-sis" class="img-modal-base" role="dialog" aria-modal="true" aria-label="Student Info System Screenshots">
+    <div class="img-modal-inner" style="max-width:780px">
+      <div class="img-modal-header">
+        <h3><i class="fas fa-user-graduate"></i> Student Info System — Screenshots</h3>
+        <button class="img-close-btn" onclick="closeImgModal('sis')" aria-label="Close">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="img-modal-body" style="flex-direction:column;gap:1.25rem">
+        <div class="desktop-mockup">
+          <div class="desktop-frame">
+            <div class="desktop-titlebar">
+              <div class="titlebar-dot red"></div>
+              <div class="titlebar-dot yellow"></div>
+              <div class="titlebar-dot green"></div>
+            </div>
+            <div class="desktop-screen">
+              <img src="images/sis1.jpg" alt="Student Info System Main Screen"
+                   onerror="this.parentElement.style.background='rgba(96,165,250,0.08)';this.parentElement.style.minHeight='140px';this.style.display='none'">
+            </div>
+          </div>
+          <span class="desktop-label">Main Dashboard</span>
+        </div>
+        <div class="desktop-mockup">
+          <div class="desktop-frame">
+            <div class="desktop-titlebar">
+              <div class="titlebar-dot red"></div>
+              <div class="titlebar-dot yellow"></div>
+              <div class="titlebar-dot green"></div>
+            </div>
+            <div class="desktop-screen">
+              <img src="images/sis2.jpg" alt="Student Info System Records Screen"
+                   onerror="this.parentElement.style.background='rgba(96,165,250,0.08)';this.parentElement.style.minHeight='140px';this.style.display='none'">
+            </div>
+          </div>
+          <span class="desktop-label">Student Records</span>
+        </div>
+      </div>
+      <div class="img-modal-footer">
+        <p>VB.NET · SQL Server · SSMS</p>
+      </div>
+    </div>
+  </div>
+
   <!-- ── Chatbot ── -->
   <button id="chatbot-toggle" aria-label="Open chat"><div class="pulse"></div><i class="fas fa-comment-dots"></i></button>
-
   <div id="chat-panel" role="dialog" aria-label="AI Assistant">
     <div class="chat-header">
       <div class="chat-header-info">
@@ -1664,18 +1795,18 @@
     </div>
   </div>
 
-  <!-- ────────────────────────────────────────────────────── -->
-  <!-- SCRIPTS                                               -->
-  <!-- ────────────────────────────────────────────────────── -->
+  <!-- ────────────────────────────────────────────────── -->
+  <!-- SCRIPTS                                            -->
+  <!-- ────────────────────────────────────────────────── -->
   <script>
-
     /* ── Loading ── */
     window.addEventListener('load', () => {
       initParticles();
       setTimeout(() => {
         const ls = document.getElementById('loading-screen');
         ls.style.transition = 'opacity 0.6s ease, visibility 0.6s';
-        ls.style.opacity = '0'; ls.style.visibility = 'hidden';
+        ls.style.opacity = '0';
+        ls.style.visibility = 'hidden';
         setTimeout(() => ls.remove(), 700);
       }, 900);
     });
@@ -1685,7 +1816,8 @@
     const themeToggle = document.getElementById('theme-toggle');
     const themeIcon   = document.getElementById('theme-icon');
     function applyTheme(t) {
-      body.classList.remove('dark','light'); body.classList.add(t);
+      body.classList.remove('dark','light');
+      body.classList.add(t);
       themeIcon.className = t === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
       localStorage.setItem('theme', t);
     }
@@ -1727,7 +1859,6 @@
     const sections        = Array.from(document.querySelectorAll('.section[id]'));
     const scrollIndicator = document.getElementById('scroll-indicator');
     const scrollTopBtn    = document.getElementById('scroll-top-btn');
-
     window.addEventListener('scroll', () => {
       const s   = window.scrollY;
       const max = document.documentElement.scrollHeight - window.innerHeight;
@@ -1739,7 +1870,6 @@
       if (scrollIndicator) scrollIndicator.classList.toggle('hidden', s > 80);
       scrollTopBtn.classList.toggle('visible', s > 400);
     }, { passive: true });
-
     scrollTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
     /* ── Mobile Menu ── */
@@ -1831,6 +1961,31 @@
       });
     }
 
+    /* ── TOAST NOTIFICATION SYSTEM ── */
+    let toastTimer = null;
+    function showToast(type, title, msg) {
+      const toast     = document.getElementById('toast');
+      const toastIcon = toast.querySelector('.toast-icon');
+      const toastProg = document.getElementById('toast-progress');
+      toastProg.style.animation = 'none';
+      toastProg.offsetHeight; // reflow to restart animation
+      toast.className = '';
+      toast.classList.add(type);
+      toastIcon.className = `toast-icon fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}`;
+      document.getElementById('toast-title').textContent = title;
+      document.getElementById('toast-msg').textContent   = msg;
+      toastProg.style.animation = 'toastTimer 5s linear forwards';
+      toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => hideToast(), 5000);
+    }
+    function hideToast() {
+      const toast = document.getElementById('toast');
+      toast.classList.remove('show');
+      clearTimeout(toastTimer);
+    }
+    document.getElementById('toast-close-btn').addEventListener('click', hideToast);
+
     /* ── CV Modal ── */
     const cvModal = document.getElementById('cv-modal');
     function openCV() {
@@ -1851,68 +2006,115 @@
       catch { window.open('cv/raymart-cv.pdf', '_blank'); }
     });
 
-    /* ── Image Modal ── */
-    const imgModal = document.getElementById('img-modal');
-    function openImgModal() {
-      imgModal.classList.add('open');
+    /* ── IMAGE MODALS ── */
+    function openImgModal(type) {
+      const modalId = type === 'sis' ? 'img-modal-sis' : 'img-modal-apk';
+      const modal   = document.getElementById(modalId);
+      if (!modal) return;
+      modal.classList.add('open');
       document.body.style.overflow = 'hidden';
     }
-    function closeImgModal() {
-      imgModal.classList.remove('open');
+    function closeImgModal(type) {
+      const modalId = type === 'sis' ? 'img-modal-sis' : 'img-modal-apk';
+      const modal   = document.getElementById(modalId);
+      if (!modal) return;
+      modal.classList.remove('open');
       document.body.style.overflow = '';
     }
-    document.getElementById('close-img-modal')?.addEventListener('click', closeImgModal);
-    imgModal.addEventListener('click', e => { if (e.target === imgModal) closeImgModal(); });
+    ['img-modal-apk', 'img-modal-sis'].forEach(id => {
+      const m = document.getElementById(id);
+      if (m) m.addEventListener('click', e => {
+        if (e.target === m) {
+          m.classList.remove('open');
+          document.body.style.overflow = '';
+        }
+      });
+    });
 
     /* ── Global Escape Key ── */
     document.addEventListener('keydown', e => {
       if (e.key === 'Escape') {
         closeCV();
-        closeImgModal();
+        closeImgModal('apk');
+        closeImgModal('sis');
         chatPanel.classList.remove('open');
+        hideToast();
       }
     });
 
-    /* ── Contact Form ── */
-    // ⚠️ Replace YOUR_FORMSPREE_ID with your actual Formspree form ID
-    const FORMSPREE_ENDPOINT = 'https://formspree.io/f/YOUR_FORMSPREE_ID';
+    /* ══════════════════════════════════════════════════════════
+       CONTACT FORM — Formspree + reCAPTCHA
+       Endpoint : https://formspree.io/f/xgorgrzy
+       reCAPTCHA site key: 6Lcgf34sAAAAADJDO85vn3Y9gEJQ1rwtLvyONBFX
+       ══════════════════════════════════════════════════════════ */
+    const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xgorgrzy';
+
     document.getElementById('contact-form')?.addEventListener('submit', async (e) => {
       e.preventDefault();
       const form = e.target;
       const btn  = document.getElementById('form-submit-btn');
-      const fb   = document.getElementById('form-feedback');
-      const data = new FormData(form);
-      btn.classList.add('btn-loading'); btn.disabled = true;
-      fb.className = ''; fb.style.display = 'none';
+
+      // ── Basic field validation ──
+      const name    = form.querySelector('[name="name"]').value.trim();
+      const email   = form.querySelector('[name="email"]').value.trim();
+      const message = form.querySelector('[name="message"]').value.trim();
+      if (!name || !email || !message) {
+        showToast('error', 'Missing Fields', 'Please fill in all required fields.');
+        return;
+      }
+
+      // ── Validate reCAPTCHA ──
+      let recaptchaResponse = '';
+      if (typeof grecaptcha !== 'undefined') {
+        recaptchaResponse = grecaptcha.getResponse();
+        if (!recaptchaResponse) {
+          showToast('error', 'reCAPTCHA Required', 'Please complete the reCAPTCHA checkbox first.');
+          return;
+        }
+      }
+
+      // ── Loading state ──
+      btn.classList.add('btn-loading');
+      btn.disabled = true;
+
       try {
+        const data = new FormData(form);
         const res = await fetch(FORMSPREE_ENDPOINT, {
-          method: 'POST', body: data, headers: { 'Accept': 'application/json' }
+          method: 'POST',
+          body: data,
+          headers: { 'Accept': 'application/json' }
         });
+
         if (res.ok) {
-          fb.textContent = '✅ Message sent! I\'ll get back to you soon.';
-          fb.className = 'success'; form.reset();
+          showToast(
+            'success',
+            'Message Sent! 🎉',
+            "Thanks for reaching out! I'll get back to you as soon as possible."
+          );
+          form.reset();
+          if (typeof grecaptcha !== 'undefined') grecaptcha.reset();
         } else {
           const json = await res.json().catch(() => ({}));
-          const msg  = json?.errors?.map(err => err.message).join(', ') || 'Something went wrong.';
-          fb.textContent = '❌ ' + msg; fb.className = 'error';
+          const errMsg = json?.errors?.map(err => err.message).join(', ')
+                         || 'Something went wrong. Please try again.';
+          showToast('error', 'Failed to Send', errMsg);
         }
-      } catch {
-        fb.textContent = '❌ Network error. Check your connection and try again.';
-        fb.className = 'error';
+      } catch (err) {
+        showToast('error', 'Connection Error', 'Check your internet connection and try again.');
       } finally {
-        btn.classList.remove('btn-loading'); btn.disabled = false;
-        setTimeout(() => { fb.className = ''; fb.style.display = 'none'; }, 6000);
+        btn.classList.remove('btn-loading');
+        btn.disabled = false;
       }
     });
 
     /* ── Chatbot ── */
-    const chatPanel = document.getElementById('chat-panel');
-    const toggleBtn = document.getElementById('chatbot-toggle');
+    const chatPanel    = document.getElementById('chat-panel');
+    const toggleBtn    = document.getElementById('chatbot-toggle');
     const closeChatBtn = document.getElementById('close-chat');
-    const sendBtn   = document.getElementById('chat-send');
-    const chatInput = document.getElementById('chat-input');
-    const msgsEl    = document.getElementById('chat-messages');
-    const typingDiv = document.getElementById('typing-indicator');
+    const sendBtn      = document.getElementById('chat-send');
+    const chatInput    = document.getElementById('chat-input');
+    const msgsEl       = document.getElementById('chat-messages');
+    const typingDiv    = document.getElementById('typing-indicator');
 
     toggleBtn.addEventListener('click', () => {
       const isOpen = chatPanel.classList.toggle('open');
@@ -1963,7 +2165,6 @@
       const prevBtn  = document.getElementById('carousel-prev');
       const nextBtn  = document.getElementById('carousel-next');
       let current = 0, autoTimer = null;
-
       function visibleCount() {
         return window.innerWidth >= 1024 ? 3 : window.innerWidth >= 640 ? 2 : 1;
       }
@@ -1992,13 +2193,10 @@
       function prev() { goTo(current <= 0 ? maxIndex() : current - 1); }
       function startAuto() { autoTimer = setInterval(next, 3800); }
       function stopAuto()  { clearInterval(autoTimer); }
-
       prevBtn.addEventListener('click', () => { stopAuto(); prev(); startAuto(); });
       nextBtn.addEventListener('click', () => { stopAuto(); next(); startAuto(); });
       track.parentElement.addEventListener('mouseenter', stopAuto);
       track.parentElement.addEventListener('mouseleave', startAuto);
-
-      /* Touch/swipe support */
       let touchStartX = 0, touchStartY = 0;
       track.addEventListener('touchstart', e => {
         touchStartX = e.touches[0].clientX;
@@ -2008,12 +2206,9 @@
       track.addEventListener('touchend', e => {
         const dx = touchStartX - e.changedTouches[0].clientX;
         const dy = Math.abs(touchStartY - e.changedTouches[0].clientY);
-        if (Math.abs(dx) > 40 && Math.abs(dx) > dy) {
-          dx > 0 ? next() : prev();
-        }
+        if (Math.abs(dx) > 40 && Math.abs(dx) > dy) { dx > 0 ? next() : prev(); }
         startAuto();
       }, { passive: true });
-
       let resizeTimer;
       window.addEventListener('resize', () => {
         clearTimeout(resizeTimer);
@@ -2023,7 +2218,6 @@
           goTo(current);
         }, 150);
       });
-
       buildDots(); goTo(0); startAuto();
     })();
 
@@ -2035,7 +2229,6 @@
       const NAMESPACE = 'raymart-portfolio-2025';
       const KEY       = 'visits';
       const BASE      = 'https://api.countapi.xyz';
-
       function fallback(hit) {
         let local = parseInt(localStorage.getItem('visit_count') || '0');
         if (hit) local += 1;
@@ -2043,7 +2236,6 @@
         sessionStorage.setItem(SESSION_KEY, '1');
         el.textContent = local.toLocaleString();
       }
-
       if (!alreadyCounted) {
         fetch(`${BASE}/hit/${NAMESPACE}/${KEY}`, { signal: AbortSignal.timeout?.(4000) })
           .then(r => r.ok ? r.json() : Promise.reject())
@@ -2056,7 +2248,6 @@
           .catch(() => fallback(false));
       }
     })();
-
   </script>
 </body>
 </html>
