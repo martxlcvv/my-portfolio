@@ -627,26 +627,32 @@
 
     /* ── Carousel / Projects ── */
     .carousel-wrap { position: relative; }
-    .carousel-track-outer { overflow: hidden; border-radius: 16px; }
+    .carousel-track-outer { position: relative; overflow: hidden; border-radius: 16px; }
     .carousel-track { display: flex; transition: transform 0.55s cubic-bezier(0.4,0,0.2,1); will-change: transform; }
-    .carousel-slide { flex: 0 0 100%; padding: 0.4rem; box-sizing: border-box; }
+    .carousel-slide { flex: 0 0 100%; padding: 0.4rem; box-sizing: border-box; min-width: 0; }
     @media (min-width: 640px)  { .carousel-slide { flex: 0 0 50%; } }
     @media (min-width: 1024px) { .carousel-slide { flex: 0 0 33.333%; } }
     .carousel-btn {
       position: absolute; top: 50%; transform: translateY(-50%);
-      z-index: 10; width: 40px; height: 40px; border-radius: 50%; border: 1px solid;
+      z-index: 20; width: 44px; height: 44px; border-radius: 50%; border: 1px solid;
       cursor: pointer; display: flex; align-items: center; justify-content: center;
-      font-size: 0.8rem; transition: all 0.3s var(--spring); backdrop-filter: blur(8px);
-      -webkit-tap-highlight-color: transparent;
+      font-size: 0.85rem; transition: all 0.3s var(--spring); backdrop-filter: blur(8px);
+      -webkit-tap-highlight-color: transparent; flex-shrink: 0;
     }
-    body.dark  .carousel-btn { background: rgba(6,6,17,0.85); border-color: var(--border-dark); color: var(--text-dark); }
-    body.light .carousel-btn { background: rgba(240,244,255,0.92); border-color: var(--border-light); color: var(--text-light); }
-    .carousel-btn:hover { background: var(--accent); border-color: var(--accent); color: #fff; transform: translateY(-50%) scale(1.08); }
-    .carousel-btn.prev { left: -20px; }
-    .carousel-btn.next { right: -20px; }
-    @media (max-width: 640px) {
+    body.dark  .carousel-btn { background: rgba(6,6,17,0.9); border-color: var(--border-dark); color: var(--text-dark); }
+    body.light .carousel-btn { background: rgba(240,244,255,0.95); border-color: var(--border-light); color: var(--text-light); }
+    .carousel-btn:hover { background: var(--accent); border-color: var(--accent); color: #fff; transform: translateY(-50%) scale(1.12); }
+    .carousel-btn.prev { left: 8px; }
+    .carousel-btn.next { right: 8px; }
+    @media (max-width: 768px) {
+      .carousel-btn { width: 40px; height: 40px; font-size: 0.75rem; }
       .carousel-btn.prev { left: 6px; }
       .carousel-btn.next { right: 6px; }
+    }
+    @media (max-width: 480px) {
+      .carousel-btn { width: 38px; height: 38px; font-size: 0.7rem; }
+      .carousel-btn.prev { left: 4px; }
+      .carousel-btn.next { right: 4px; }
     }
     .carousel-dots { display: flex; justify-content: center; gap: 0.45rem; margin-top: 1.5rem; flex-wrap: wrap; }
     .dot { width: 6px; height: 6px; border-radius: 99px; cursor: pointer; transition: all 0.35s var(--spring); flex-shrink: 0; }
@@ -655,36 +661,65 @@
     .dot.active { width: 22px; background: var(--accent); }
 
     /* ── Project Card ── */
-    .project-card { overflow: hidden; cursor: default; }
+    .project-card { overflow: hidden; cursor: default; display: flex; flex-direction: column; height: 100%; }
     .project-thumb {
-      height: 150px; display: flex; align-items: center;
+      height: 160px; display: flex; align-items: center;
       justify-content: center; position: relative; overflow: hidden;
+      background-size: cover; background-position: center; flex-shrink: 0;
     }
     .project-thumb::after {
       content: ''; position: absolute; inset: 0;
-      background: linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.35));
+      background: linear-gradient(to bottom, transparent 35%, rgba(0,0,0,0.4));
       z-index: 1;
     }
     .project-thumb .icon {
       font-size: 2.8rem; z-index: 2; position: relative;
-      transition: transform 0.4s var(--spring), opacity 0.3s; opacity: 0.75;
+      transition: transform 0.4s var(--spring), opacity 0.3s; opacity: 0.85;
+    }
+    .project-thumb .image {
+      width: 100%; height: 100%; object-fit: cover; position: absolute;
+      inset: 0; z-index: 0; transition: transform 0.5s ease;
     }
     .project-card:hover .icon { transform: scale(1.18) rotate(-5deg); opacity: 1; }
-    .project-body { padding: 1.25rem; }
-    .project-body h3 { font-family: var(--font-display); font-size: 0.95rem; font-weight: 700; margin-bottom: 0.35rem; }
-    .project-body p { font-size: 0.81rem; line-height: 1.6; }
+    .project-card:hover .image { transform: scale(1.08); }
+    @media (max-width: 768px) {
+      .project-thumb { height: 140px; }
+    }
+    @media (max-width: 480px) {
+      .project-thumb { height: 120px; }
+    }
+    .project-body { padding: 1.25rem; flex: 1; display: flex; flex-direction: column; }
+    .project-body h3 { font-family: var(--font-display); font-size: 0.95rem; font-weight: 700; margin-bottom: 0.35rem; word-break: break-word; }
+    .project-body p { font-size: 0.81rem; line-height: 1.6; flex: 1; }
+    @media (max-width: 768px) {
+      .project-body { padding: 1rem; }
+      .project-body h3 { font-size: 0.9rem; }
+      .project-body p { font-size: 0.78rem; }
+    }
+    @media (max-width: 480px) {
+      .project-body { padding: 0.85rem; }
+      .project-body h3 { font-size: 0.85rem; margin-bottom: 0.25rem; }
+      .project-body p { font-size: 0.75rem; }
+    }
     body.dark  .project-body p { color: rgba(232,234,246,0.55); }
     body.light .project-body p { color: rgba(15,15,45,0.5); }
     .project-tags { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.75rem; }
     .project-tag {
       font-size: 0.62rem; font-weight: 600; letter-spacing: 0.07em;
       text-transform: uppercase; padding: 0.16rem 0.55rem; border-radius: 99px; transition: all 0.2s;
+      white-space: nowrap;
     }
     body.dark  .project-tag { background: rgba(0,212,255,0.08); color: var(--accent); border: 1px solid rgba(0,212,255,0.18); }
     body.light .project-tag { background: rgba(124,58,237,0.07); color: var(--accent2); border: 1px solid rgba(124,58,237,0.2); }
+    @media (max-width: 480px) {
+      .project-tag { font-size: 0.58rem; padding: 0.12rem 0.45rem; }
+    }
 
     /* ── Card Action Buttons ── */
-    .project-actions { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.85rem; align-items: center; }
+    .project-actions { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: auto; align-items: center; }
+    @media (max-width: 480px) {
+      .project-actions { gap: 0.3rem; }
+    }
     .btn-card {
       display: inline-flex; align-items: center; gap: 0.35rem;
       font-size: 0.7rem; font-weight: 700;
@@ -692,22 +727,35 @@
       text-transform: uppercase; padding: 0.4rem 0.85rem;
       border-radius: 8px; border: none; cursor: pointer;
       text-decoration: none; transition: all 0.25s var(--spring);
-      flex-shrink: 0; white-space: nowrap;
-      -webkit-tap-highlight-color: transparent;
+      flex-shrink: 0; white-space: nowrap; min-height: 32px;
+      -webkit-tap-highlight-color: transparent; touch-action: manipulation;
     }
     .btn-card.primary {
       background: linear-gradient(135deg, var(--accent), var(--accent2));
       color: #fff; box-shadow: 0 2px 12px rgba(0,212,255,0.2);
     }
     .btn-card.primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,212,255,0.4); }
+    .btn-card.primary:active { transform: translateY(-1px); }
     .btn-card.secondary {
       background: transparent; color: rgba(232,234,246,0.55);
       border: 1px solid rgba(255,255,255,0.12);
     }
     body.light .btn-card.secondary { color: rgba(15,15,45,0.5); border-color: rgba(0,0,0,0.12); }
     .btn-card.secondary:hover { background: #e2e8f0; color: #0f0f2d; border-color: #e2e8f0; transform: translateY(-2px); }
+    .btn-card.secondary:active { transform: translateY(-1px); }
     .btn-card.apk { background: transparent; color: #4ade80; border: 1px solid rgba(74,222,128,0.3); }
     .btn-card.apk:hover { background: #4ade80; color: #0f2d1a; border-color: #4ade80; transform: translateY(-2px); }
+    .btn-card.apk:active { transform: translateY(-1px); }
+    @media (max-width: 768px) {
+      .btn-card { font-size: 0.65rem; padding: 0.38rem 0.75rem; }
+    }
+    @media (max-width: 480px) {
+      .btn-card { font-size: 0.62rem; padding: 0.35rem 0.65rem; min-height: 30px; }
+      .btn-card i { font-size: 0.65rem; }
+    }
+    @media (max-width: 360px) {
+      .btn-card { font-size: 0.58rem; padding: 0.32rem 0.55rem; min-height: 28px; }
+    }
 
     /* ── Social Links ── */
     .social-links { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 1.5rem; }
@@ -1191,6 +1239,17 @@
       .stack-grid { grid-template-columns: 1fr; }
       .hosting-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
     }
+    @media (max-width: 480px) {
+      .section { padding: 2.5rem 0.9rem; }
+      .section-title { font-size: clamp(1.3rem, 7vw, 1.8rem); margin-bottom: 1.5rem; }
+      .section-tag { font-size: 0.62rem; margin-bottom: 0.5rem; }
+      .carousel-slide { padding: 0.3rem; }
+    }
+    @media (max-width: 360px) {
+      .section { padding: 2rem 0.75rem; }
+      .section-title { font-size: 1.2rem; margin-bottom: 1.25rem; }
+      .project-actions { gap: 0.25rem; }
+    }
     @media (max-width: 768px) {
       #navbar { padding: 0.9rem 1.1rem; }
       #navbar.scrolled { padding: 0.6rem 1.1rem; }
@@ -1367,7 +1426,7 @@
           <!-- Project 1: POS System -->
           <div class="carousel-slide">
             <div class="card project-card">
-              <div class="project-thumb" style="background:linear-gradient(135deg,#0d1b2a,#1a2d44)">
+              <div class="project-thumb" style="background:linear-gradient(135deg,#0d1b2a,#1a2d44)" data-image="">
                 <div class="icon" style="color:#00d4ff"><i class="fas fa-cash-register"></i></div>
               </div>
               <div class="project-body">
@@ -1389,7 +1448,7 @@
           <!-- Project 2: Website Game -->
           <div class="carousel-slide">
             <div class="card project-card">
-              <div class="project-thumb" style="background:linear-gradient(135deg,#1a0d2e,#2d1a44)">
+              <div class="project-thumb" style="background:linear-gradient(135deg,#1a0d2e,#2d1a44)" data-image="">
                 <div class="icon" style="color:#a78bfa"><i class="fas fa-gamepad"></i></div>
               </div>
               <div class="project-body">
@@ -1410,7 +1469,7 @@
           <!-- Project 3: APK POS -->
           <div class="carousel-slide">
             <div class="card project-card">
-              <div class="project-thumb" style="background:linear-gradient(135deg,#0d2618,#1a4430)">
+              <div class="project-thumb" style="background:linear-gradient(135deg,#0d2618,#1a4430)" data-image="">
                 <div class="icon" style="color:#4ade80"><i class="fas fa-mobile-alt"></i></div>
               </div>
               <div class="project-body">
@@ -1431,7 +1490,7 @@
           <!-- Project 4: Frontend School -->
           <div class="carousel-slide">
             <div class="card project-card">
-              <div class="project-thumb" style="background:linear-gradient(135deg,#1a1a0d,#2e2e1a)">
+              <div class="project-thumb" style="background:linear-gradient(135deg,#1a1a0d,#2e2e1a)" data-image="">
                 <div class="icon" style="color:#fbbf24"><i class="fas fa-school"></i></div>
               </div>
               <div class="project-body">
@@ -1452,7 +1511,7 @@
           <!-- Project 5: E-commerce -->
           <div class="carousel-slide">
             <div class="card project-card">
-              <div class="project-thumb" style="background:linear-gradient(135deg,#2e0d1a,#44182a)">
+              <div class="project-thumb" style="background:linear-gradient(135deg,#2e0d1a,#44182a)" data-image="">
                 <div class="icon" style="color:#f43f5e"><i class="fas fa-cake-candles"></i></div>
               </div>
               <div class="project-body">
@@ -1473,7 +1532,7 @@
           <!-- Project 6: Student Info System -->
           <div class="carousel-slide">
             <div class="card project-card">
-              <div class="project-thumb" style="background:linear-gradient(135deg,#0d1a2e,#1a2d4a)">
+              <div class="project-thumb" style="background:linear-gradient(135deg,#0d1a2e,#1a2d4a)" data-image="">
                 <div class="icon" style="color:#60a5fa"><i class="fas fa-user-graduate"></i></div>
               </div>
               <div class="project-body">
@@ -2221,7 +2280,77 @@
       buildDots(); goTo(0); startAuto();
     })();
 
-    /* ── Visit Counter ── */
+    /* ── Project Image Manager ── */
+    const ProjectImageManager = {
+      /**
+       * Set image for a project thumbnail
+       * @param {number} projectIndex - 0-based index of project (0-5)
+       * @param {string} imagePath - Path to image file (e.g., 'images/project1.jpg')
+       */
+      setImage: function(projectIndex, imagePath) {
+        const slides = document.querySelectorAll('.carousel-slide');
+        if (projectIndex < 0 || projectIndex >= slides.length) {
+          console.warn(`Project index ${projectIndex} out of range`);
+          return;
+        }
+        const thumb = slides[projectIndex].querySelector('.project-thumb');
+        thumb.setAttribute('data-image', imagePath);
+        
+        // Remove existing image if any
+        const existingImg = thumb.querySelector('.image');
+        if (existingImg) existingImg.remove();
+        
+        // Add new image
+        if (imagePath) {
+          const img = document.createElement('img');
+          img.className = 'image';
+          img.src = imagePath;
+          img.alt = 'Project screenshot';
+          thumb.appendChild(img);
+        }
+      },
+      /**
+       * Set images for multiple projects
+       * @param {Array} images - Array of { index, path } objects
+       */
+      setImages: function(images) {
+        images.forEach(({ index, path }) => {
+          this.setImage(index, path);
+        });
+      },
+      /**
+       * Get current image path for a project
+       * @param {number} projectIndex
+       * @returns {string} Image path or empty string
+       */
+      getImage: function(projectIndex) {
+        const slides = document.querySelectorAll('.carousel-slide');
+        if (projectIndex < 0 || projectIndex >= slides.length) return '';
+        return slides[projectIndex].querySelector('.project-thumb').getAttribute('data-image') || '';
+      },
+      /**
+       * Initialize images from a config object
+       * @param {Object} config - { projectName: 'imagePath', ... }
+       */
+      initFromConfig: function(config) {
+        const projectNames = ['POS System', 'Website Game Project', 'APK POS Application', 
+                              'Frontend School Project', 'E-commerce Website', 'Student Info System'];
+        projectNames.forEach((name, idx) => {
+          if (config[name]) {
+            this.setImage(idx, config[name]);
+          }
+        });
+      }
+    };
+    
+    // Example usage (uncomment to use):
+    // ProjectImageManager.setImages([
+    //   { index: 0, path: 'images/pos-project.jpg' },
+    //   { index: 1, path: 'images/game-project.jpg' },
+    //   { index: 2, path: 'images/apk-pos.jpg' }
+    // ]);
+
+    /* \u2500\u2500 Visit Counter \u2500\u2500 */
     (function () {
       const el = document.getElementById('visit-count');
       const SESSION_KEY = 'raymart_visited_session';
